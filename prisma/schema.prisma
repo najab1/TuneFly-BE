@@ -1,0 +1,279 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  admin
+}
+
+model user {
+  id                Int                @id @default(autoincrement())
+  uuid              String             @unique
+  email             String             @unique @db.VarChar(255)
+  password          String             @db.VarChar(255)
+  usertype          String
+  role              Role               @default(user)
+  step_one          Boolean            @default(false)
+  verify_email      Boolean            @default(false)
+  created_At        DateTime           @default(now())
+  updated_At        DateTime           @default(now()) @updatedAt
+  UserArtistProfile userartistprofile?
+  UserDriverProfile userdriverprofile?
+}
+
+model otp {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique
+  email      String   @unique
+  otp        Int
+  created_at DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
+
+model userartistprofile {
+  id                  Int                  @id @default(autoincrement())
+  userId              String               @unique
+  username            String               @unique
+  name                String?
+  phonenumber         String?
+  country             String?
+  avatar              String?              @default("null")
+  approvel            Boolean?             @default(false)
+  created_At          DateTime             @default(now())
+  updated_At          DateTime             @default(now()) @updatedAt
+  user                user                 @relation(fields: [userId], references: [uuid])
+  manageartistprofile manageartistprofile?
+}
+
+model manageartistprofile {
+  id                Int               @id @default(autoincrement())
+  userId            String            @unique
+  instagram         String?           @default("null")
+  twitter           String?           @default("null")
+  tiktok            String?           @default("null")
+  spotify           String?           @default("null")
+  apple             String?           @default("null")
+  soundcloud        String?           @default("null")
+  created_At        DateTime          @default(now())
+  updated_At        DateTime          @default(now()) @updatedAt
+  userartistprofile userartistprofile @relation(fields: [userId], references: [userId])
+}
+
+model userdriverprofile {
+  id              Int      @id @default(autoincrement())
+  userId          String   @unique
+  username        String   @unique
+  name            String?
+  phonenumber     String?
+  country         String?
+  make            String?
+  model           String?
+  year            String?
+  verify_step_one Boolean  @default(false)
+  avatar          String?  @default("null")
+  created_At      DateTime @default(now())
+  updated_At      DateTime @default(now()) @updatedAt
+  user            user     @relation(fields: [userId], references: [uuid])
+}
+
+model driveruserlicense {
+  id         Int      @id @default(autoincrement())
+  userId     String   @unique
+  media      String
+  license    String
+  created_At DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
+
+model artistlibrary {
+  id           Int           @id @default(autoincrement())
+  uuid         String        @unique
+  userId       String
+  artistname   String
+  songname     String?
+  genre        String
+  country      String?
+  coverart     String?
+  media        String
+  subscription Boolean       @default(false)
+  status       String?       @default("pending")
+  created_At   DateTime      @default(now())
+  updated_At   DateTime      @default(now()) @updatedAt
+  currentsong  currentsong?
+  notification notification?
+}
+
+model artistlibraryApprovel {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique
+  userId     String
+  artistname String
+  genre      String
+  media      String
+  created_At DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
+
+model likedtrack {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique
+  userId     String
+  musicId    String
+  created_At DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
+
+model historytrack {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique
+  userId     String
+  musicId    String
+  created_At DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
+
+model impressions {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique
+  userId     String
+  artistId   String
+  musicId    String
+  country    String
+  created_At DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
+
+model listener {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique
+  userId     String
+  artistId   String
+  musicId    String
+  country    String
+  created_At DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
+
+model songplayed {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique
+  userId     String
+  artistId   String
+  musicId    String
+  country    String
+  created_At DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
+
+model currentsong {
+  id            Int           @id @default(autoincrement())
+  userId        String        @unique
+  musicId       String        @unique
+  created_At    DateTime      @default(now())
+  updated_At    DateTime      @default(now()) @updatedAt
+  artistlibrary artistlibrary @relation(fields: [musicId], references: [uuid])
+}
+
+model availablebalance {
+  id         Int      @id @default(autoincrement())
+  userId     String   @unique
+  amount     Float    @unique
+  created_At DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
+
+model earning {
+  id         Int      @id @default(autoincrement())
+  userId     String
+  amount     Float
+  created_At DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
+
+model subscription {
+  id            Int      @id @default(autoincrement())
+  musicId       String   @unique
+  budgetplan    String
+  budgetamount  String
+  startDateTime String
+  endDateTime   String?
+  created_At    DateTime @default(now())
+  updated_At    DateTime @default(now()) @updatedAt
+}
+
+model compaign {
+  id         Int      @id @default(autoincrement())
+  musicId    String   @unique
+  amount     Float
+  created_At DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
+
+model adminearning {
+  id         Int      @id @default(autoincrement())
+  userId     String
+  amount     Float
+  created_At DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
+
+model notification {
+  id            Int           @id @default(autoincrement())
+  uuid          String        @unique
+  fromId        String
+  toId          String
+  musicId       String        @unique
+  message       String?
+  status        String
+  created_At    DateTime      @default(now())
+  updated_At    DateTime      @default(now()) @updatedAt
+  artistlibrary artistlibrary @relation(fields: [musicId], references: [uuid])
+}
+
+model savecard {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique
+  userId     String
+  cardnumber String   @unique
+  cardexp    String
+  cardToken  String
+  created_At DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
+
+model withdraw {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique
+  userId     String
+  username   String
+  useremail  String
+  cardnumber String   @unique
+  cardexp    String
+  amount     String
+  created_At DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
+
+model rates {
+  id         Int      @id @default(autoincrement())
+  quatar     String
+  half       String
+  third      String
+  complete   String
+  created_At DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
+
+model qrcode {
+  id         Int      @id @default(autoincrement())
+  qrId       String   @unique
+  userId     String?  @default("null")  
+  created_At DateTime @default(now())
+  updated_At DateTime @default(now()) @updatedAt
+}
