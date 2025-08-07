@@ -1,4 +1,4 @@
-([TuneFly Backend Repository])
+TuneFly Backend Repository
 
 TuneFly is a music marketing platform where artists can launch promotional campaigns and admins can manage them via a custom dashboard.
 
